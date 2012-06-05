@@ -21,6 +21,7 @@ function EventManager(options, _sources) {
 	t.removeEventSource = removeEventSource;
 	t.updateEvent = updateEvent;
 	t.renderEvent = renderEvent;
+	t.renderEvents = renderEvents;
 	t.removeEvents = removeEvents;
 	t.clientEvents = clientEvents;
 	t.normalizeEvent = normalizeEvent;
@@ -249,15 +250,23 @@ function EventManager(options, _sources) {
 	
 	
 	function renderEvent(event, stick) {
-		normalizeEvent(event);
-		if (!event.source) {
-			if (stick) {
-				stickySource.events.push(event);
-				event.source = stickySource;
-			}
-		}
-		// always push event to cache (issue #1112:)
-		cache.push(event);
+        renderEvents([event], stick);
+	}
+	
+	function renderEvents(events, stick) {
+        console.warn('renderEvents', events)
+        for (var i =0; i < events.length; i++) {
+            var event = events[i];
+    		normalizeEvent(event);
+    		if (!event.source) {
+    			if (stick) {
+    				stickySource.events.push(event);
+    				event.source = stickySource;
+    			}
+    		}
+    		// always push event to cache (issue #1112:)
+    		cache.push(event);
+        }
 		reportEvents(cache);
 	}
 	
