@@ -254,7 +254,6 @@ function EventManager(options, _sources) {
 	}
 	
 	function renderEvents(events, stick) {
-        console.warn('renderEvents', events)
         for (var i =0; i < events.length; i++) {
             var event = events[i];
     		normalizeEvent(event);
