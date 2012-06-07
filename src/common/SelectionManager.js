@@ -10,6 +10,7 @@ function SelectionManager() {
 	t.unselect = unselect;
 	t.reportSelection = reportSelection;
 	t.daySelectionMousedown = daySelectionMousedown;
+	t.daySelectionDblClick = daySelectionDblClick;
 	
 	
 	// imports
@@ -29,10 +30,20 @@ function SelectionManager() {
 	if (opt('selectable') && opt('unselectAuto')) {
 		$(document).mousedown(function(ev) {
 			var ignore = opt('unselectCancel');
+            var target = $(ev.target);
+            
 			if (ignore) {
-				if ($(ev.target).parents(ignore).length) { // could be optimized to stop after first match
-					return;
-				}
+                if (ignore instanceof Array) {
+                    for (var i = 0; i < ignore.length; i++) {
+        				if (target.is(ignore[i]) || target.parents(ignore[i]).length > 0) {
+                            return;
+                        }
+                    }
+                } else {
+    				if (target.parents(ignore).length) { // could be optimized to stop after first match
+    					return;
+    				}
+                }
 			}
 			unselect(ev);
 		});
@@ -69,13 +80,14 @@ function SelectionManager() {
 		var cellIsAllDay = t.cellIsAllDay;
 		var hoverListener = t.getHoverListener();
 		var reportDayClick = t.reportDayClick; // this is hacky and sort of weird
-		if (ev.which == 1 && opt('selectable')) { // which==1 means left mouse button
+
+		if (ev.which == 1 && opt('selectable') && !$(ev.target).hasClass('fc-cell-overlay')) { // which==1 means left mouse button
 			unselect(ev);
 			var _mousedownElement = this;
 			var dates;
 			hoverListener.start(function(cell, origCell) { // TODO: maybe put cellDate/cellIsAllDay info in cell
 				clearSelection();
-				if (cell && cellIsAllDay(cell)) {
+				if (cell && cellIsAllDay(cell) && (cell.row - origCell.row !== 0 || cell.col - origCell.col !== 0 ) ) {
 					dates = [ cellDate(origCell), cellDate(cell) ].sort(cmp);
 					renderSelection(dates[0], dates[1], true);
 				}else{
@@ -93,6 +105,18 @@ function SelectionManager() {
 			});
 		}
 	}
+    
+    function daySelectionDblClick (ev) {
+        if (ev.which == 1 && opt('selectable') && !$(ev.target).hasClass('fc-cell-overlay')) { // which==1 means left mouse button
+            unselect(ev);
+    		var cellDate = t.cellDate;
+    		var newCell = coordinateGrid.cell(ev.pageX, ev.pageY);
+    		var d1 = cellDate(newCell);
+    		var d2 = cloneDate(d1);
+    		renderSelection(d1, d2, true);
+    		reportSelection(d1, d2, true, ev);
+        }
+    }
 
 
 }

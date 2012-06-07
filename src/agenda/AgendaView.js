@@ -73,6 +73,7 @@ function AgendaView(element, calendar, viewName) {
 	var reportSelection = t.reportSelection;
 	var unselect = t.unselect;
 	var daySelectionMousedown = t.daySelectionMousedown;
+	var daySelectionDblClick = t.daySelectionDblClick;
 	var slotSegHtml = t.slotSegHtml;
 	var formatDate = calendar.formatDate;
 	
@@ -110,7 +111,7 @@ function AgendaView(element, calendar, viewName) {
 	
 	var colCnt;
 	var slotCnt;
-	var coordinateGrid;
+    var coordinateGrid;
 	var hoverListener;
 	var colContentPositions;
 	var slotTopCache = {};
@@ -295,7 +296,7 @@ function AgendaView(element, calendar, viewName) {
 			"</tbody>" +
 			"</table>";
 		slotTable = $(s).appendTo(slotContent);
-		slotTableFirstInner = slotTable.find('div:first');
+		slotTableFirstInner = slotTable.find('tr:first');
 		
 		slotBind(slotTable.find('td'));
 		
@@ -423,18 +424,20 @@ function AgendaView(element, calendar, viewName) {
 
 	function dayBind(cells) {
 		cells.click(slotClick)
-			.mousedown(daySelectionMousedown);
+            .on('dblclick', daySelectionDblClick)
+            .mousedown(daySelectionMousedown);
 	}
 
 
 	function slotBind(cells) {
-		cells.click(slotClick)
-			.mousedown(slotSelectionMousedown);
+        cells.on('mousedown', slotSelectionMousedown)
+            .on('dblclick', slotSelectionDblClick)
+            .click(slotClick);
 	}
 	
 	
 	function slotClick(ev) {
-		if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
+    	if (!opt('selectable')) { // if selectable, SelectionManager will worry about dayClick
 			var col = Math.min(colCnt-1, Math.floor((ev.pageX - dayTable.offset().left - axisWidth) / colWidth));
 			var date = colDate(col);
 			var rowMatch = this.parentNode.className.match(/fc-slot(\d+)/); // TODO: maybe use data
@@ -733,12 +736,12 @@ function AgendaView(element, calendar, viewName) {
 	
 	
 	function slotSelectionMousedown(ev) {
-		if (ev.which == 1 && opt('selectable')) { // ev.which==1 means left mouse button
+		if (ev.which == 1 && opt('selectable') && $(ev.target).parents('.fc-select-helper').length <= 0) { // ev.which==1 means left mouse button
 			unselect(ev);
 			var dates, helperOption = opt('selectHelper');
 			hoverListener.start(function(cell, origCell) {
 				clearSelection();
-				if (cell && (cell.col == origCell.col || !helperOption) && !cellIsAllDay(cell)) {
+                if ((cell.row - origCell.row !== 0 || cell.col - origCell.col !== 0 ) && cell && (cell.col == origCell.col || !helperOption) && !cellIsAllDay(cell) ) {
 					var d1 = cellDate(origCell);
 					var d2 = cellDate(cell);
 					dates = [
@@ -763,6 +766,15 @@ function AgendaView(element, calendar, viewName) {
 			});
 		}
 	}
+    function slotSelectionDblClick (ev) {
+		if (ev.which == 1 && opt('selectable') && $(ev.target).parents('.fc-select-helper').length <= 0) {
+    		var newCell = coordinateGrid.cell(ev.pageX, ev.pageY);
+    		var d1 = cellDate(newCell);
+    		var d2 = addMinutes(cloneDate(d1), opt('slotMinutes'));
+    		renderSlotSelection(d1, d2);
+    		reportSelection(d1, d2, false, ev);
+        }
+    }
 	
 	
 	function reportDayClick(date, allDay, ev) {
