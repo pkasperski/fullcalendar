@@ -459,9 +459,9 @@ function Calendar(element, options, eventSources) {
 		} else if (name.indexOf('list') == 0 || name == 'tableCols') {
 			options[name] = value;
 			currentView.start = null; // force re-render
-		} else if (name == 'maxHeight') {
+		} else if (name == 'maxHeight' || name == 'selectable' || name == 'editable') {
 			options[name] = value;
-		}
+        }
 	}
 	
 	

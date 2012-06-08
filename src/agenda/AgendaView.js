@@ -40,6 +40,7 @@ function AgendaView(element, calendar, viewName) {
 	t.allDayRow = getAllDayRow;
 	t.allDayBounds = allDayBounds;
 	t.getHoverListener = function() { return hoverListener };
+	t.getCoordinateGrid = function() { return coordinateGrid };
 	t.colContentLeft = colContentLeft;
 	t.colContentRight = colContentRight;
 	t.getDaySegmentContainer = function() { return daySegmentContainer };

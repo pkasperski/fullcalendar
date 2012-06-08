@@ -110,6 +110,7 @@ function SelectionManager() {
         if (ev.which == 1 && opt('selectable') && !$(ev.target).hasClass('fc-cell-overlay')) { // which==1 means left mouse button
             unselect(ev);
     		var cellDate = t.cellDate;
+    		var coordinateGrid = t.getCoordinateGrid();
     		var newCell = coordinateGrid.cell(ev.pageX, ev.pageY);
     		var d1 = cellDate(newCell);
     		var d2 = cloneDate(d1);
