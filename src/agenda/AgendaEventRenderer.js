@@ -9,6 +9,7 @@ function AgendaEventRenderer() {
 	t.clearEvents = clearEvents;
 	t.slotSegHtml = slotSegHtml;
 	t.bindDaySeg = bindDaySeg;
+	t.renderEventsSimplified = renderEventsSimplified;
 	
 	
 	// imports
@@ -32,6 +33,7 @@ function AgendaEventRenderer() {
 	var colContentLeft = t.colContentLeft;
 	var colContentRight = t.colContentRight;
 	var renderDaySegs = t.renderDaySegs;
+	var renderDaySegsSimplified = t.renderDaySegsSimplified;
 	var resizableDayEvent = t.resizableDayEvent; // TODO: streamline binding architecture
 	var getColCnt = t.getColCnt;
 	var getColWidth = t.getColWidth;
@@ -54,6 +56,25 @@ function AgendaEventRenderer() {
 	/* Rendering
 	----------------------------------------------------------------------------*/
 	
+	function renderEventsSimplified (events) {
+		var i, len=events.length,
+			dayEvents=[],
+			slotEvents=[];
+		for (i=0; i<len; i++) {
+			if (events[i].allDay) {
+				dayEvents.push(events[i]);
+			}else{
+				slotEvents.push(events[i]);
+			}
+		}
+		
+		if (opt('allDaySlot') && dayEvents.length > 0) {
+			renderDaySegsSimplified(compileDaySegs(dayEvents));
+		}
+		if (slotEvents.length > 0) {
+		    renderSlotSegsSimplified(compileSlotSegs(slotEvents));
+		}
+	}
 
 	function renderEvents(events, modifiedEventId) {
 		reportEvents(events);
@@ -71,6 +92,7 @@ function AgendaEventRenderer() {
 			renderDaySegs(compileDaySegs(dayEvents), modifiedEventId);
 			setHeight(); // no params means set to viewHeight
 		}
+		
 		renderSlotSegs(compileSlotSegs(slotEvents), modifiedEventId);
 		
 		if (opt('currentTimeIndicator')) {
@@ -142,6 +164,46 @@ function AgendaEventRenderer() {
 		}
 	}
 	
+	// Render events in a simplified manner in the 'time slots' at the bottom
+    function renderSlotSegsSimplified (segs) {
+        var i, segCnt=segs.length, seg,
+    		event,
+    		top, bottom,
+    		colI, levelI, forward,
+    		leftmost,
+    		outerWidth,
+    		left,
+    		html='',
+    		slotSegmentContainer = getSlotSegmentContainer(),
+    		rtl, dis, dit,
+    		colCnt = getColCnt(),
+    		overlapping = colCnt > 1;
+    	if (rtl = opt('isRTL')) {
+    		dis = -1;
+    		dit = colCnt - 1;
+    	}else{
+    		dis = 1;
+    		dit = 0;
+    	}
+    	
+        
+          for (i=0; i<segCnt; i++) {
+              seg = segs[i];
+              event = seg.event;
+              seg.top = timePosition(seg.start, seg.start);
+              seg.bottom = timePosition(seg.start, seg.end);
+              colI = seg.col;
+              levelI = seg.level;
+              forward = seg.forward || 0;
+              leftmost = colContentLeft(colI*dis + dit);
+              seg.outerWidth = 2;
+              seg.outerHeight = seg.bottom - seg.top;
+              seg.left = leftmost;
+              html += slotSegSimplifiedHtml(event, seg);
+          }
+          slotSegmentContainer.append(html);
+          return;
+    }
 	
 	// renders events in the 'time slots' at the bottom
 	
@@ -284,6 +346,15 @@ function AgendaEventRenderer() {
 					
 	}
 	
+	function slotSegSimplifiedHtml (event, seg) {
+        var skinCss = getSkinCss(event, opt);
+        var skinCssAttr = (skinCss ? " style='" + skinCss + "'" : '');
+        var classes = ['fc-event', 'fc-event-skin', 'fc-event-vert', 'fc-event-simplified'];
+	    var html = " <div style='position:absolute;z-index:8;width:2px;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
+	    " class='" + classes.join(' ') + "'" + "></div>";
+	    return html;
+	    
+	}
 	
 	function slotSegHtml(event, seg) {
 		var html = "<";

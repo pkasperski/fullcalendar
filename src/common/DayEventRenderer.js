@@ -6,6 +6,7 @@ function DayEventRenderer() {
 	// exports
 	t.renderDaySegs = renderDaySegs;
 	t.resizableDayEvent = resizableDayEvent;
+	t.renderDaySegsSimplified = renderDaySegsSimplified;
 	
 	
 	// imports
@@ -39,6 +40,78 @@ function DayEventRenderer() {
 	
 	/* Rendering
 	-----------------------------------------------------------------------------*/
+	
+	function renderDaySegsSimplified(segs) {
+		var segmentContainer = getDaySegmentContainer();
+		segmentContainer.append(daySegSimplifiedHTML(segs));
+	}
+	
+    function daySegSimplifiedHTML(segs) {
+    	var rtl = opt('isRTL');
+    	var i;
+    	var segCnt=segs.length;
+    	var seg;
+    	var event;
+    	var classes;
+    	var bounds = allDayBounds();
+    	var minLeft = bounds.left;
+    	var maxLeft = bounds.right;
+    	var leftCol;
+    	var rightCol;
+    	var left;
+    	var right;
+    	var skinCss;
+    	var html = '';
+    	// calculate desired position/dimensions, create html
+    	for (i=0; i<segCnt; i++) {
+    		seg = segs[i];
+    		event = seg.event;
+    		classes = ['fc-event', 'fc-event-skin', 'fc-event-hori', 'fc-event-simplified'];
+    		if (rtl) {
+    			if (seg.isStart) {
+    				classes.push('fc-corner-right');
+    			}
+    			if (seg.isEnd) {
+    				classes.push('fc-corner-left');
+    			}
+    			leftCol = dayOfWeekCol(seg.end.getDay()-1);
+    			rightCol = dayOfWeekCol(seg.start.getDay());
+    			left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
+    			right = seg.isStart ? colContentRight(rightCol) : maxLeft;
+    		}else{
+    			if (seg.isStart) {
+    				classes.push('fc-corner-left');
+    			}
+    			if (seg.isEnd) {
+    				classes.push('fc-corner-right');
+    			}
+    			leftCol = dayOfWeekCol(seg.start.getDay());
+    			rightCol = dayOfWeekCol(seg.end.getDay()-1);
+    			left = seg.isStart ? colContentLeft(leftCol) : minLeft;
+    			right = seg.isEnd ? colContentRight(rightCol) : maxLeft;
+    		}
+    		classes = classes.concat(event.className);
+    		if (event.source) {
+    			classes = classes.concat(event.source.className || []);
+    		}
+    		skinCss = getSkinCss(event, opt);
+
+    		seg.left = left;
+    		seg.outerWidth = right - left;
+    		seg.startCol = leftCol;
+    		seg.endCol = rightCol + 1; // needs to be exclusive
+
+    		html +=
+    			"<div class='" + classes.join(' ') + "'" +
+    			" style='position:absolute;z-index:8;height:2px;left:"+left+"px;width:" + seg.outerWidth + "px;" + skinCss + "'" +
+    			">" +
+    			"<div" +
+    			" class='fc-event-inner fc-event-skin'" +
+    			(skinCss ? " style='" + skinCss + "'" : '') +
+    			"></div></div>";
+    	}
+    	return html;
+    }
 	
 	
 	function renderDaySegs(segs, modifiedEventId) {

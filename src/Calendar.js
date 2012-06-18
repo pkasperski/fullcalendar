@@ -28,6 +28,7 @@ function Calendar(element, options, eventSources) {
 	t.getView = getView;
 	t.option = option;
 	t.trigger = trigger;
+	t.renderEventsSimplified = renderEventsSimplified;
 	
 	
 	// imports
@@ -359,6 +360,12 @@ function Calendar(element, options, eventSources) {
 		});
 	}
 	
+	function renderEventsSimplified(events) {
+	    // Not all views have this function just yet
+	    if (currentView.renderEventsSimplified) {
+	        currentView.renderEventsSimplified(events);
+	    }
+	}
 
 
 	/* Selection
