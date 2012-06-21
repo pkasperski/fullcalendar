@@ -113,9 +113,6 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: #fff;
-	opacity: .3;
-	filter: alpha(opacity=30);
 	}
 	
 .fc .ui-draggable-dragging .fc-event-bg, /* TODO: something nicer like .fc-opacity */
@@ -135,7 +132,12 @@
 	font-family: monospace;
 	text-align: center;
 	cursor: s-resize;
+	display: none;
 	}
+
+.fc-event-vert:hover .ui-resizable-s {
+	display: block;
+}
 	
 .fc-agenda .ui-resizable-resizing { /* TODO: better selector */
 	_overflow: hidden;
