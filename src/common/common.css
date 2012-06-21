@@ -6,6 +6,10 @@
 	border: 1px solid #ccc;
 	}
 	
+th.fc-widget-header {
+	border-left: none;
+}
+	
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
 	background: #f2f2f2;
 	}
@@ -138,7 +142,7 @@
 ------------------------------------------------------------------------*/
 	 
 .fc-event {
-	border-style: solid;
+	border-style: solid ;
 	border-width: 0;
 	font-size: .85em;
 	cursor: default;
