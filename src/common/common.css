@@ -6,9 +6,9 @@
 	border: 1px solid #ccc;
 	}
 	
-th.fc-widget-header {
+/*th.fc-widget-header {
 	border-left: none;
-}
+}*/
 	
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
 	background: #f2f2f2;
