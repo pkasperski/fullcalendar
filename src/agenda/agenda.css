@@ -4,8 +4,29 @@
 
 .fc-agenda table {
 	border-collapse: separate;
+	width: 100%; 
+	white-space: nowrap; 
+	table-layout: fixed;
 	}
+
+th {
+	font-size: 0.87em;
+}
 	
+th, td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.day-header {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: auto;
+	padding: 2px 4px;
+}
+
 .fc-agenda-days th {
 	text-align: center;
 	}

@@ -320,7 +320,7 @@ function AgendaView(element, calendar, viewName) {
 		for (i=0; i<colCnt; i++) {
 			date = colDate(i);
 			headCell = dayHeadCells.eq(i);
-			headCell.html(formatDate(date, colFormat));
+            headCell.html('<span class="day-header">' + formatDate(date, colFormat) + '</span>');
 			bodyCell = dayBodyCells.eq(i);
 			if (+date == +today) {
 				bodyCell.addClass(tm + '-state-highlight fc-today');
