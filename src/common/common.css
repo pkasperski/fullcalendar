@@ -143,9 +143,10 @@
 	 
 .fc-event {
 	border-style: solid ;
-	border-width: 0;
+	border-width: 0px;
 	font-size: .85em;
 	cursor: default;
+	opacity: .8;
 	}
 	
 a.fc-event,
@@ -172,7 +173,7 @@ a.fc-event {
 	width: 100%;
 	height: 100%;
 	border-style: solid;
-	border-width: 0;
+	border-width: 0px;
 	overflow: hidden;
 	}
 	
@@ -190,7 +191,14 @@ a.fc-event {
 	line-height: 50%; /* */
 	}
 	
+	.fc-event-content {
+	margin: -4px 0 0 1px;
+	}
 	
+	.fc-event-time {
+	font-size: 0.65em;
+	font-weight: bold;
+	}
 	
 /* Horizontal Events
 ------------------------------------------------------------------------*/

@@ -68,12 +68,14 @@ function DayEventRenderer() {
     		event = seg.event;
     		classes = ['fc-event', 'fc-event-skin', 'fc-event-hori', 'fc-event-simplified'];
     		if (rtl) {
-    			if (seg.isStart) {
-    				classes.push('fc-corner-right');
-    			}
-    			if (seg.isEnd) {
-    				classes.push('fc-corner-left');
-    			}
+                
+                // CREATES FAKE ROUNDED CORNERS
+                // if (seg.isStart) {
+                //     classes.push('fc-corner-right');
+                // }
+                // if (seg.isEnd) {
+                //     classes.push('fc-corner-left');
+                // }
     			leftCol = dayOfWeekCol(seg.end.getDay()-1);
     			rightCol = dayOfWeekCol(seg.start.getDay());
     			left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
@@ -260,12 +262,14 @@ function DayEventRenderer() {
 				classes.push('fc-event-draggable');
 			}
 			if (rtl) {
-				if (seg.isStart) {
-					classes.push('fc-corner-right');
-				}
-				if (seg.isEnd) {
-					classes.push('fc-corner-left');
-				}
+                
+                
+                // if (seg.isStart) {
+                //     classes.push('fc-corner-right');
+                // }
+                // if (seg.isEnd) {
+                //     classes.push('fc-corner-left');
+                // }
 				leftCol = dayOfWeekCol(seg.end.getDay()-1);
 				rightCol = dayOfWeekCol(seg.start.getDay());
 				left = seg.isEnd ? colContentLeft(leftCol) : minLeft;

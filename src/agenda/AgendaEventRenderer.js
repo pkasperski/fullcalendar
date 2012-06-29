@@ -365,12 +365,14 @@ function AgendaEventRenderer() {
 		if (isEventDraggable(event)) {
 			classes.push('fc-event-draggable');
 		}
-		if (seg.isStart) {
-			classes.push('fc-corner-top');
-		}
-		if (seg.isEnd) {
-			classes.push('fc-corner-bottom');
-		}
+        
+        // THESE ARE FAKED ROUNDED CORNERS
+        // if (seg.isStart) {
+        //     classes.push('fc-corner-top');
+        // }
+        // if (seg.isEnd) {
+        //     classes.push('fc-corner-bottom');
+        // }
 		classes = classes.concat(event.className);
 		if (event.source) {
 			classes = classes.concat(event.source.className || []);
