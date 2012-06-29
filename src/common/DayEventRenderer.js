@@ -81,12 +81,14 @@ function DayEventRenderer() {
     			left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
     			right = seg.isStart ? colContentRight(rightCol) : maxLeft;
     		}else{
-    			if (seg.isStart) {
-    				classes.push('fc-corner-left');
-    			}
-    			if (seg.isEnd) {
-    				classes.push('fc-corner-right');
-    			}
+                
+                // CREATES FAKE ROUNDED CORNERS
+    			// if (seg.isStart) {
+    			//                     classes.push('fc-corner-left');
+    			//                 }
+    			//                 if (seg.isEnd) {
+    			//                     classes.push('fc-corner-right');
+    			//                 }
     			leftCol = dayOfWeekCol(seg.start.getDay());
     			rightCol = dayOfWeekCol(seg.end.getDay()-1);
     			left = seg.isStart ? colContentLeft(leftCol) : minLeft;
@@ -263,7 +265,7 @@ function DayEventRenderer() {
 			}
 			if (rtl) {
                 
-                
+                // CREATES FAKE ROUNDED CORNERS
                 // if (seg.isStart) {
                 //     classes.push('fc-corner-right');
                 // }
@@ -275,12 +277,13 @@ function DayEventRenderer() {
 				left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
 				right = seg.isStart ? colContentRight(rightCol) : maxLeft;
 			}else{
-				if (seg.isStart) {
-					classes.push('fc-corner-left');
-				}
-				if (seg.isEnd) {
-					classes.push('fc-corner-right');
-				}
+                // CREATES FAKE ROUNDED CORNERS
+				// if (seg.isStart) {
+				//                     classes.push('fc-corner-left');
+				//                 }
+				//                 if (seg.isEnd) {
+				//                     classes.push('fc-corner-right');
+				//                 }
 				leftCol = dayOfWeekCol(seg.start.getDay());
 				rightCol = dayOfWeekCol(seg.end.getDay()-1);
 				left = seg.isStart ? colContentLeft(leftCol) : minLeft;
