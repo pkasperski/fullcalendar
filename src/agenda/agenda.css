@@ -98,7 +98,7 @@ th, td {
 
 .fc-agenda-slots tr.fc-minor th,
 .fc-agenda-slots tr.fc-minor td {
-	border-top-style: dotted;
+	border-top-style: none;
 	}
 	
 .fc-agenda-slots tr.fc-minor th.ui-widget-header {
