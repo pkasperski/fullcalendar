@@ -336,7 +336,7 @@ function AgendaEventRenderer() {
 				if (seg.contentTop !== undefined && height - seg.contentTop < 10) {
 					// not enough room for title, put it in the time header
 					eventElement.find('div.fc-event-time')
-						.text(formatDate(event.start, opt('timeFormat')) + ' - ' + event.title);
+						.text(formatDate(event.start, opt('timeFormat')) + '-' + event.title);
 					eventElement.find('div.fc-event-title')
 						.remove();
 				}
@@ -348,12 +348,13 @@ function AgendaEventRenderer() {
 	
 	function slotSegSimplifiedHtml (event, seg) {
         var skinCss = getSkinCss(event, opt);
+        var daycol = $('.fc-col0:first', t.element);
+        var daycolWidth = daycol.width() - 10;
         var skinCssAttr = (skinCss ? " style='" + skinCss + "'" : '');
         var classes = ['fc-event', 'fc-event-skin', 'fc-event-vert', 'fc-event-simplified'];
-	    var html = " <div style='position:absolute;z-index:8;width:2px;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
+	    var html = " <div style='position:absolute;z-index:8; width: " + daycolWidth + "px ;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
 	    " class='" + classes.join(' ') + "'" + "></div>";
 	    return html;
-	    
 	}
 	
 	function slotSegHtml(event, seg) {
