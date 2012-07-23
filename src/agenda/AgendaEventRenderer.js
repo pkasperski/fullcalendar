@@ -388,9 +388,9 @@ function AgendaEventRenderer() {
 			">" +
 			"<div class='fc-event-inner fc-event-skin'" + skinCssAttr + ">" +
 			"<div class='fc-event-head fc-event-skin'" + skinCssAttr + ">" +
-			"<div class='fc-event-time'>" +
+			"<div class='fc-event-time'><span class='event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
-			"</div>" +
+			"</span></div>" +
 			"</div>" +
 			"<div class='fc-event-content'>" +
 			"<div class='fc-event-title'>" +

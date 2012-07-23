@@ -146,7 +146,7 @@
 	border-width: 0px;
 	font-size: .85em;
 	cursor: default;
-	opacity: .8;
+	opacity: 1;
 	}
 	
 a.fc-event,
@@ -180,6 +180,10 @@ a.fc-event {
 .fc-event-time,
 .fc-event-title {
 	padding: 0 1px;
+	}
+
+.fc-event-title {
+	line-height: 16px;
 	}
 	
 .fc .ui-resizable-handle { /*** TODO: don't use ui-resizable anymore, change class ***/
