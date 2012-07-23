@@ -178,7 +178,7 @@ function AgendaView(element, calendar, viewName) {
 			"<table style='width:100%' class='fc-agenda-days fc-border-separate' cellspacing='0'>" +
 			"<thead>" +
 			"<tr>" +
-			"<th class='fc-agenda-axis " + headerClass + "'>" + (opt('weekNumbers') ? t.visStart.getWeek() : '&nbsp;') + "</th>";
+			"<th class='fc-agenda-axis " + headerClass + "'>" + (opt('weekNumbers') ? 'Wk' + t.visStart.getWeek() : '&nbsp;') + "</th>";
 		for (i=0; i<colCnt; i++) {
 			s +=
 				"<th class='fc- fc-col" + i + ' ' + headerClass + "'/>"; // fc- needed for setDayID
@@ -261,7 +261,7 @@ function AgendaView(element, calendar, viewName) {
 		}
 		
 		slotScroller =
-			$("<div style='position:absolute;width:100%;overflow-x:hidden;overflow-y:auto'/>")
+			$("<div class='fc-slot-scroller' style='position:absolute;width:100%;overflow-x:hidden;overflow-y:auto'/>")
 				.appendTo(slotLayer);
 				
 		slotContent =
@@ -314,7 +314,7 @@ function AgendaView(element, calendar, viewName) {
 		var today = clearTime(new Date());
         
         if (opt('weekNumbers')) {
-            dayHead.find('th.fc-first').html(colDate(0).getWeek());
+            dayHead.find('th.fc-first').html('Wk ' + colDate(0).getWeek());
         }
 
 		for (i=0; i<colCnt; i++) {
