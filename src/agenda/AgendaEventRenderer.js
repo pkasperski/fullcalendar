@@ -392,6 +392,7 @@ function AgendaEventRenderer() {
 			"<div class='fc-event-time'><span class='event-time'>" +
 			htmlEscape(formatDates(event.start, event.end, opt('timeFormat'))) +
 			"</span></div>" +
+			"<span class='event-icons'></span>" +
 			"</div>" +
 			"<div class='fc-event-content'>" +
 			"<div class='fc-event-title'>" +
