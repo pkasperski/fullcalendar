@@ -3,7 +3,8 @@
 
 .fc-widget-header,    /* <th>, usually */
 .fc-widget-content {  /* <td>, usually */
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
+	color: #707070;
 	}
 	
 /*th.fc-widget-header {
