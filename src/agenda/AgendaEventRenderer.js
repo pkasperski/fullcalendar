@@ -336,7 +336,7 @@ function AgendaEventRenderer() {
 				if (seg.contentTop !== undefined && height - seg.contentTop < 10) {
 					// not enough room for title, put it in the time header
 					eventElement.find('div.fc-event-time')
-						.text(formatDate(event.start, opt('timeFormat')) + '-' + event.title);
+						.text(formatDate(event.start, opt('timeFormat')) + ' ' + (event.timezone ? event.timezone + ' - ' : '') + event.title);
 					eventElement.find('div.fc-event-title')
 						.remove();
 				}
@@ -397,6 +397,7 @@ function AgendaEventRenderer() {
 			"</div>" +
 			"<div class='fc-event-content'>" +
 			"<div class='fc-event-title'>" +
+			"<span class='event-timezone'>" + (event.timezone ? event.timezone : '') + "</span>" +
 			htmlEscape(event.title) +
 			"</div>" +
 			"</div>" +
