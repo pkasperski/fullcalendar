@@ -397,7 +397,7 @@ function AgendaEventRenderer() {
 			"</div>" +
 			"<div class='fc-event-content'>" +
 			"<div class='fc-event-title'>" +
-			"<span class='event-timezone'>" + (event.timezone ? event.timezone : '') + "</span>" +
+			"<span class='event-timezone'>" + (event.timezone ? event.timezone : '') + " </span>" +
 			htmlEscape(event.title) +
 			"</div>" +
 			"</div>" +
