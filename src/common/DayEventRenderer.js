@@ -106,7 +106,9 @@ function DayEventRenderer() {
     		seg.endCol = rightCol + 1; // needs to be exclusive
 
     		html +=
-    			"<div class='" + classes.join(' ') + "'" +
+    			"<div" +
+				" data-event-id='" + event.id + "'" +
+    			" class='" + classes.join(' ') + "'" +
     			" style='position:absolute;z-index:8;height:2px;left:"+left+"px;width:" + seg.outerWidth + "px;" + skinCss + "'" +
     			">" +
     			"<div" +
@@ -301,6 +303,7 @@ function DayEventRenderer() {
 				html += "<div";
 			}
 			html +=
+				" data-event-id='" + event.id + "'" +
 				" class='" + classes.join(' ') + "'" +
 				" style='position:absolute;z-index:8;left:"+left+"px;" + skinCss + "'" +
 				">" +
@@ -315,7 +318,9 @@ function DayEventRenderer() {
 					"</span>";
 			}
 			html +=
-				"<span class='fc-event-title'>" + htmlEscape(event.title) + "</span>" +
+				"<span class='fc-event-title'>" +
+					"<span class='event-title-txt'>" + htmlEscape(event.title) + " </span>" +
+ 				"</span>" +
 				"</div>";
 			if (seg.isEnd && isEventResizable(event)) {
 				html +=

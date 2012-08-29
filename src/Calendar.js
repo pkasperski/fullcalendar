@@ -11,6 +11,7 @@ function Calendar(element, options, eventSources) {
 	t.refetchEvents = refetchEvents;
 	t.reportEvents = reportEvents;
 	t.reportEventChange = reportEventChange;
+	t.updateEventsNoRerender = updateEventsNoRerender;
 	t.rerenderEvents = rerenderEvents;
 	t.changeView = changeView;
 	t.select = select;
@@ -339,6 +340,15 @@ function Calendar(element, options, eventSources) {
 	// called when a single event's data has been changed
 	function reportEventChange(eventID) {
 		rerenderEvents(eventID);
+	}
+
+	function updateEventsNoRerender(list) {
+		for (var i = 0; i < list.length; i++) {
+			var _events = this.clientEvents(list[i]);
+			if (_events.length > 0) {
+				currentView.updateEventNoRerender(_events[0]);
+			}
+		}
 	}
 	
 	

@@ -10,6 +10,8 @@ function AgendaEventRenderer() {
 	t.slotSegHtml = slotSegHtml;
 	t.bindDaySeg = bindDaySeg;
 	t.renderEventsSimplified = renderEventsSimplified;
+	t.updateEventNoRerender = updateEventNoRerender;
+
 	
 	
 	// imports
@@ -52,7 +54,50 @@ function AgendaEventRenderer() {
 	var timeLineInterval;
 	
 	
-	
+	// Here we only update the even in the dom
+	// We trigger this function only when the event start/end/allDay didn't change
+	function updateEventNoRerender(event) {
+		var eventID = event.id;
+		var container = getSlotSegmentContainer();
+		if (event.allDay) {
+			container = getDaySegmentContainer();
+		}
+		var eventElement = container.find('[data-event-id="' + eventID + '"]');
+		eventElement.each(function () {
+			var el = $(this);
+
+			var classes = ['fc-event', 'fc-event-skin', 'fc-event-vert'];
+			if (isEventDraggable(event)) {
+				classes.push('fc-event-draggable');
+			}
+			classes = classes.concat(event.className);
+			if (event.source) {
+				classes = classes.concat(event.source.className || []);
+			}
+			el.attr('class', classes.join(' '));
+
+			el.find('.event-title-txt').html(htmlEscape(event.title));
+			el.find('.event-timezone').html((event.timezone ? event.timezone : ''));
+
+			var textColor = event.color;
+			var backgroundColor = event.backgroundColor || event.color;
+			var borderColor = event.borderColor || event.color;
+			var cssStyles = {};
+			if (backgroundColor) {
+				cssStyles['backgroundColor'] = backgroundColor;
+			}
+			if (borderColor) {
+				cssStyles['borderColor'] = borderColor;
+			}
+			if (textColor) {
+				cssStyles['color'] = textColor;
+			}
+
+			el.css(cssStyles);
+			el.find('.fc-event-skin').css(cssStyles);
+		});
+	}
+
 	/* Rendering
 	----------------------------------------------------------------------------*/
 	
@@ -94,7 +139,6 @@ function AgendaEventRenderer() {
 		}
 		
 		renderSlotSegs(compileSlotSegs(slotEvents), modifiedEventId);
-		
 		if (opt('currentTimeIndicator')) {
 			window.clearInterval(timeLineInterval);
 			timeLineInterval = window.setInterval(setTimeIndicator, 30000);
@@ -399,7 +443,7 @@ function AgendaEventRenderer() {
 			"<div class='fc-event-content'>" +
 			"<div class='fc-event-title'>" +
 			"<span class='event-timezone'>" + (event.timezone ? event.timezone : '') + " </span>" +
-			htmlEscape(event.title) +
+			"<span class='event-title-txt'>" + htmlEscape(event.title) + " </span>" +
 			"</div>" +
 			"</div>" +
 			"<div class='fc-event-bg'></div>" +
