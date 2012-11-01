@@ -519,9 +519,10 @@ function AgendaEventRenderer() {
 	
 	
 	// when event starts out FULL-DAY
-	
+
 	function draggableDayEvent(event, eventElement, isStart) {
 		var origWidth;
+		var origHeight;
 		var revert;
 		var allDay=true;
 		var dayDelta;
@@ -530,7 +531,10 @@ function AgendaEventRenderer() {
 		var colWidth = getColWidth();
 		var slotHeight = getSlotHeight();
 		var minMinute = getMinMinute();
+		var helperElement;
 		eventElement.draggable({
+			helper: 'clone',
+			appendTo: 'body',
 			zIndex: 9,
 			opacity: opt('dragOpacity', 'month'), // use whatever the month view was using
 			revertDuration: opt('dragRevertDuration'),
@@ -538,6 +542,11 @@ function AgendaEventRenderer() {
 				trigger('eventDragStart', eventElement, event, ev, ui);
 				hideEvents(event, eventElement);
 				origWidth = eventElement.width();
+				origHeight = eventElement.height();
+				eventElement.css('display', 'none');
+				helperElement = ui.helper;
+				// As the helper is no longer in the all-day bar, it becomes higher if not implicitly set
+				helperElement.css('height', origHeight);
 				hoverListener.start(function(cell, origCell, rowDelta, colDelta) {
 					clearOverlays();
 					if (cell) {
@@ -556,12 +565,11 @@ function AgendaEventRenderer() {
 							if (isStart) {
 								if (allDay) {
 									// convert event to temporary slot-event
-									eventElement.width(colWidth - 10); // don't use entire width
+									helperElement.width(colWidth - 10); // don't use entire width
 									setOuterHeight(
-										eventElement,
+										helperElement,
 										slotHeight * Math.round(
-											(event.end ? ((event.end - event.start) / MINUTE_MS) : opt('defaultEventMinutes'))
-											/ opt('slotMinutes')
+											(event.end && event.end.getHours() !== 0 ? ((event.end - event.start) / MINUTE_MS) : opt('defaultEventMinutes')) / opt('slotMinutes')
 										)
 									);
 									eventElement.draggable('option', 'grid', [colWidth, 1]);
@@ -574,7 +582,7 @@ function AgendaEventRenderer() {
 						revert = revert || (allDay && !dayDelta);
 					}else{
 						resetElement();
-						//setOverflowHidden(false);
+						eventElement.draggable('option', 'grid', null);
 						revert = true;
 					}
 					eventElement.draggable('option', 'revert', revert);
@@ -583,7 +591,7 @@ function AgendaEventRenderer() {
 			stop: function(ev, ui) {
 				hoverListener.stop();
 				clearOverlays();
-				trigger('eventDragStop', eventElement, event, ev, ui);
+
 				if (revert) {
 					// hasn't moved or is out of bounds (draggable has already reverted)
 					resetElement();
@@ -593,21 +601,23 @@ function AgendaEventRenderer() {
 					// changed!
 					var minuteDelta = 0;
 					if (!allDay) {
-						minuteDelta = Math.round((eventElement.offset().top - getBodyContent().offset().top) / slotHeight)
+						minuteDelta = Math.round((helperElement.offset().top - getBodyContent().offset().top) / slotHeight)
 							* opt('slotMinutes')
 							+ minMinute
 							- (event.start.getHours() * 60 + event.start.getMinutes());
 					}
 					eventDrop(this, event, dayDelta, minuteDelta, allDay, ev, ui);
 				}
+				eventElement.css('display', ''); // show() was causing display=inline
+				trigger('eventDragStop', eventElement, event, ev, ui);
 				//setOverflowHidden(false);
 			}
 		});
 		function resetElement() {
 			if (!allDay) {
-				eventElement
+				helperElement
 					.width(origWidth)
-					.height('')
+					.height(origHeight)
 					.draggable('option', 'grid', null);
 				allDay = true;
 			}
@@ -620,6 +630,7 @@ function AgendaEventRenderer() {
 	function draggableSlotEvent(event, eventElement, timeElement) {
 		var origPosition;
 		var allDay=false;
+		var outsideGrid = false;
 		var dayDelta;
 		var minuteDelta;
 		var prevMinuteDelta;
@@ -628,17 +639,24 @@ function AgendaEventRenderer() {
 		var colCnt = getColCnt();
 		var colWidth = getColWidth();
 		var slotHeight = getSlotHeight();
+		var originalTopPosition, helperTimeElement;
+		
 		eventElement.draggable({
+			helper: 'clone',
+			appendTo: 'body',
 			zIndex: 9,
 			scroll: false,
 			grid: [colWidth, slotHeight],
-			axis: colCnt==1 ? 'y' : false,
+			// axis: colCnt==1 ? 'y' : false, // commented out, otherwise the dayView (1-column) didn't work
 			opacity: opt('dragOpacity'),
 			revertDuration: opt('dragRevertDuration'),
 			start: function(ev, ui) {
 				trigger('eventDragStart', eventElement, event, ev, ui);
 				hideEvents(event, eventElement);
 				origPosition = eventElement.position();
+				eventElement.css('display', 'none');
+				originalTopPosition = ev.pageY;
+				helperTimeElement = ui.helper.find('div.fc-event-time');
 				minuteDelta = prevMinuteDelta = 0;
 				hoverListener.start(function(cell, origCell, rowDelta, colDelta) {
 					eventElement.draggable('option', 'revert', !cell);
@@ -661,11 +679,15 @@ function AgendaEventRenderer() {
 							// on slots
 							resetElement();
 						}
+					}else{
+						// Setting outsideGrid so the revert function works as expected
+						outsideGrid = true;
+						eventElement.draggable('option', 'grid', null);
 					}
 				}, ev, 'drag');
 			},
 			drag: function(ev, ui) {
-				minuteDelta = Math.round((ui.position.top - origPosition.top) / slotHeight) * opt('slotMinutes');
+				minuteDelta = Math.round((ev.pageY - originalTopPosition) / slotHeight) * opt('slotMinutes');
 				if (minuteDelta != prevMinuteDelta) {
 					if (!allDay) {
 						updateTimeText(minuteDelta);
@@ -676,7 +698,6 @@ function AgendaEventRenderer() {
 			stop: function(ev, ui) {
 				var cell = hoverListener.stop();
 				clearOverlays();
-				trigger('eventDragStop', eventElement, event, ev, ui);
 				if (cell && (dayDelta || minuteDelta || allDay)) {
 					// changed!
 					eventDrop(this, event, dayDelta, allDay ? 0 : minuteDelta, allDay, ev, ui);
@@ -687,7 +708,10 @@ function AgendaEventRenderer() {
 					eventElement.css(origPosition); // sometimes fast drags make event revert to wrong position
 					updateTimeText(0);
 					showEvents(event, eventElement);
+					eventElement.css('display', ''); // show() was causing display=inline
 				}
+				// moved the trigger after it is done, so all the logic of fullcalendar is done before we apply our own
+				trigger('eventDragStop', eventElement, event, ev, ui);
 			}
 		});
 		function updateTimeText(minuteDelta) {
@@ -696,14 +720,17 @@ function AgendaEventRenderer() {
 			if (event.end) {
 				newEnd = addMinutes(cloneDate(event.end), minuteDelta);
 			}
-			timeElement.text(formatDates(newStart, newEnd, opt('timeFormat')));
+			var format = formatDates(newStart, newEnd, opt('timeFormat'));
+			timeElement.text(format);
+			helperTimeElement.text(format);
 		}
 		function resetElement() {
 			// convert back to original slot-event
-			if (allDay) {
+			if (allDay || outsideGrid) {
 				timeElement.css('display', ''); // show() was causing display=inline
 				eventElement.draggable('option', 'grid', [colWidth, slotHeight]);
 				allDay = false;
+				outsideGrid = false;
 			}
 		}
 	}
