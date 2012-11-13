@@ -52,6 +52,7 @@ function AgendaEventRenderer() {
 	var formatDate = calendar.formatDate;
 	var formatDates = calendar.formatDates;
 	var timeLineInterval;
+	var isDragging;
 	
 	
 	// Here we only update the even in the dom
@@ -132,6 +133,13 @@ function AgendaEventRenderer() {
 			}else{
 				slotEvents.push(events[i]);
 			}
+		}
+
+		if (isDragging) {
+			// For now we are removing the drag-helper while the events are re-rendered to asure that the helper is always removed
+			// This is pretty harsh though, as it could result in a drag being cancelled without the user knowing why
+			$('body > .ui-draggable-dragging').remove();
+			isDragging = false;
 		}
 		if (opt('allDaySlot')) {
 			renderDaySegs(compileDaySegs(dayEvents), modifiedEventId);
@@ -537,8 +545,9 @@ function AgendaEventRenderer() {
 			appendTo: 'body',
 			zIndex: 9,
 			opacity: opt('dragOpacity', 'month'), // use whatever the month view was using
-			revertDuration: opt('dragRevertDuration'),
+			revertDuration: opt('dragRevertDuration'), // recommended to put this on zero, to be sure no cloned helpers stay floating around
 			start: function(ev, ui) {
+				isDragging = true;
 				trigger('eventDragStart', eventElement, event, ev, ui);
 				hideEvents(event, eventElement);
 				origWidth = eventElement.width();
@@ -610,6 +619,7 @@ function AgendaEventRenderer() {
 				}
 				eventElement.css('display', ''); // show() was causing display=inline
 				trigger('eventDragStop', eventElement, event, ev, ui);
+				isDragging = false;
 				//setOverflowHidden(false);
 			}
 		});
@@ -649,8 +659,9 @@ function AgendaEventRenderer() {
 			grid: [colWidth, slotHeight],
 			// axis: colCnt==1 ? 'y' : false, // commented out, otherwise the dayView (1-column) didn't work
 			opacity: opt('dragOpacity'),
-			revertDuration: opt('dragRevertDuration'),
+			revertDuration: opt('dragRevertDuration'), // recommended to put this on zero, to be sure no cloned helpers stay floating around
 			start: function(ev, ui) {
+				isDragging = true;
 				trigger('eventDragStart', eventElement, event, ev, ui);
 				hideEvents(event, eventElement);
 				origPosition = eventElement.position();
@@ -712,6 +723,7 @@ function AgendaEventRenderer() {
 				}
 				// moved the trigger after it is done, so all the logic of fullcalendar is done before we apply our own
 				trigger('eventDragStop', eventElement, event, ev, ui);
+				isDragging = false;
 			}
 		});
 		function updateTimeText(minuteDelta) {
