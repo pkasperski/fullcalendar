@@ -343,11 +343,16 @@ function Calendar(element, options, eventSources) {
 	}
 
 	function updateEventsNoRerender(list) {
-		for (var i = 0; i < list.length; i++) {
-			var _events = this.clientEvents(list[i]);
-			if (_events.length > 0) {
-				currentView.updateEventNoRerender(_events[0]);
+		if (currentView.updateEventNoRerender) {
+			for (var i = 0; i < list.length; i++) {
+				var _events = this.clientEvents(list[i]);
+				if (_events.length > 0) {
+					currentView.updateEventNoRerender(_events[0]);
+				}
 			}
+		} else {
+			console.info('To Optimize add updateEventsNoRerender to view:', currentView.name);
+			rerenderEvents();
 		}
 	}
 	
