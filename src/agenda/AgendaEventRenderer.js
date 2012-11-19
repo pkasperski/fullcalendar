@@ -83,12 +83,18 @@ function AgendaEventRenderer() {
 			var textColor = event.color;
 			var backgroundColor = event.backgroundColor || event.color;
 			var borderColor = event.borderColor || event.color;
+			var secondaryBorderColor = event.secondaryBorderColor || null;
+
 			var cssStyles = {};
 			if (backgroundColor) {
 				cssStyles['backgroundColor'] = backgroundColor;
 			}
 			if (borderColor) {
 				cssStyles['borderColor'] = borderColor;
+			}
+			if (secondaryBorderColor) {
+				cssStyles['border-right-color'] = secondaryBorderColor;
+				cssStyles['border-bottom-color'] = secondaryBorderColor;
 			}
 			if (textColor) {
 				cssStyles['color'] = textColor;

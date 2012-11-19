@@ -308,17 +308,21 @@ function setDayID(cell, date) {
 }
 
 function getSkinCss(event, opt) {
-    // Retrieve complete color-structure from the event it self only
-    var textColor = event.color;
+	// Retrieve complete color-structure from the event it self only
+	var textColor = event.color;
 	var backgroundColor = event.backgroundColor || event.color;
-    var borderColor = event.borderColor || event.color;
-
+	var borderColor = event.borderColor || event.color;
+	var secondaryBorderColor = event.secondaryBorderColor || null;
 	var statements = [];
 	if (backgroundColor) {
 		statements.push('background-color:' + backgroundColor);
 	}
 	if (borderColor) {
 		statements.push('border-color:' + borderColor);
+	}
+	if (secondaryBorderColor) {
+		statements.push('border-right-color:' + secondaryBorderColor);
+		statements.push('border-bottom-color:' + secondaryBorderColor);
 	}
 	if (textColor) {
 		statements.push('color:' + textColor);
