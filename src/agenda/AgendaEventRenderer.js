@@ -510,8 +510,15 @@ function AgendaEventRenderer() {
 			timeline.show();
 		}
 		else {
+			$('.fc-today', t.element).removeClass('fc-state-highlight').removeClass('fc-today');
 			timeline.hide();
 			return;
+		}
+
+		var dayId = dayIDs[cur_time.getDay()];
+		if ( !$('.fc-widget-content.fc-today').hasClass('fc-' + dayId) ) {
+			$('.fc-widget-content.fc-today').removeClass('fc-today').removeClass('fc-state-highlight');
+			$('.fc-widget-content.fc-' + dayId).addClass('fc-today').addClass('fc-state-highlight');
 		}
 
 		var secs = (cur_time.getHours() * 60 * 60) + (cur_time.getMinutes() * 60) + cur_time.getSeconds();
