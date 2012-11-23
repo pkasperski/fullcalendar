@@ -414,12 +414,16 @@ function AgendaView(element, calendar, viewName) {
 	
 	
 	function beforeHide() {
-		savedScrollTop = slotScroller.scrollTop();
+		if (slotScroller && slotScroller.scrollTop) {
+			savedScrollTop = slotScroller.scrollTop();
+		}
 	}
 	
 	
 	function afterShow() {
-		slotScroller.scrollTop(savedScrollTop);
+		if (savedScrollTop && slotScroller && slotScroller.scrollTop) {
+			slotScroller.scrollTop(savedScrollTop);
+		}
 	}
 	
 	
