@@ -321,9 +321,9 @@ function DayEventRenderer() {
 				"<span class='fc-event-title'>" +
 					"<span class='event-title-txt'>" + htmlEscape(event.title) + " </span>" +
  				"</span>" +
+				"</div>" + // closing inner
 				"<span class='event-badges'></span>" +
-				"<span class='event-icons'></span>" +
-				"</div>";
+				"<span class='event-icons'></span>";
 			if (seg.isEnd && isEventResizable(event)) {
 				html +=
 					"<div class='ui-resizable-handle ui-resizable-" + (rtl ? 'w' : 'e') + "'>" +
