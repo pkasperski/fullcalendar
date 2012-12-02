@@ -41,9 +41,9 @@ function DayEventRenderer() {
 	/* Rendering
 	-----------------------------------------------------------------------------*/
 	
-	function renderDaySegsSimplified(segs) {
+	function renderDaySegsSimplified(segs, classNames) {
 		var segmentContainer = getDaySegmentContainer();
-		segmentContainer.append(daySegSimplifiedHTML(segs));
+		segmentContainer.append(daySegSimplifiedHTML(segs), classNames);
 	}
 	
     function daySegSimplifiedHTML(segs) {
@@ -66,7 +66,8 @@ function DayEventRenderer() {
     	for (i=0; i<segCnt; i++) {
     		seg = segs[i];
     		event = seg.event;
-    		classes = ['fc-event', 'fc-event-skin', 'fc-event-hori', 'fc-event-simplified'];
+    		defaultClasses = ['fc-event', 'fc-event-skin', 'fc-event-hori', 'fc-event-simplified'];
+    		classes = classNames ? defaultClasses.concat(classNames) : defaultClasses;
     		if (rtl) {
                 
                 // CREATES FAKE ROUNDED CORNERS

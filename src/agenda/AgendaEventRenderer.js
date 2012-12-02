@@ -108,7 +108,7 @@ function AgendaEventRenderer() {
 	/* Rendering
 	----------------------------------------------------------------------------*/
 	
-	function renderEventsSimplified (events) {
+	function renderEventsSimplified (events, classNames) {
 		var i, len=events.length,
 			dayEvents=[],
 			slotEvents=[];
@@ -121,10 +121,10 @@ function AgendaEventRenderer() {
 		}
 		
 		if (opt('allDaySlot') && dayEvents.length > 0) {
-			renderDaySegsSimplified(compileDaySegs(dayEvents));
+			renderDaySegsSimplified(compileDaySegs(dayEvents), classNames);
 		}
 		if (slotEvents.length > 0) {
-		    renderSlotSegsSimplified(compileSlotSegs(slotEvents));
+		    renderSlotSegsSimplified(compileSlotSegs(slotEvents), classNames);
 		}
 	}
 
@@ -223,7 +223,7 @@ function AgendaEventRenderer() {
 	}
 	
 	// Render events in a simplified manner in the 'time slots' at the bottom
-    function renderSlotSegsSimplified (segs) {
+    function renderSlotSegsSimplified (segs, classNames) {
         var i, segCnt=segs.length, seg,
     		event,
     		top, bottom,
@@ -257,7 +257,7 @@ function AgendaEventRenderer() {
               seg.outerWidth = 2;
               seg.outerHeight = seg.bottom - seg.top;
               seg.left = leftmost;
-              html += slotSegSimplifiedHtml(event, seg);
+              html += slotSegSimplifiedHtml(event, seg, classNames);
           }
           slotSegmentContainer.append(html);
           return;
@@ -404,12 +404,13 @@ function AgendaEventRenderer() {
 					
 	}
 	
-	function slotSegSimplifiedHtml (event, seg) {
+	function slotSegSimplifiedHtml (event, seg, classNames) {
         var skinCss = getSkinCss(event, opt);
         var daycol = $('.fc-col0:first', t.element);
         var daycolWidth = daycol.width() - 10;
         var skinCssAttr = (skinCss ? " style='" + skinCss + "'" : '');
-        var classes = ['fc-event', 'fc-event-skin', 'fc-event-vert', 'fc-event-simplified'];
+        var defaultClasses = ['fc-event', 'fc-event-skin', 'fc-event-vert', 'fc-event-simplified'];
+        var classes = classNames ? defaultClasses.concat(classNames) : defaultClasses;
 	    var html = " <div style='position:absolute;z-index:8; width: " + daycolWidth + "px ;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
 	    " class='" + classes.join(' ') + "'" + "></div>";
 	    return html;

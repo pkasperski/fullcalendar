@@ -375,10 +375,10 @@ function Calendar(element, options, eventSources) {
 		});
 	}
 	
-	function renderEventsSimplified(events) {
+	function renderEventsSimplified(events, classNames) {
 	    // Not all views have this function just yet
 	    if (currentView.renderEventsSimplified) {
-	        currentView.renderEventsSimplified(events);
+	        currentView.renderEventsSimplified(events, classNames);
 	    }
 	}
 
