@@ -259,7 +259,8 @@ function AgendaEventRenderer() {
               seg.left = leftmost;
               html += slotSegSimplifiedHtml(event, seg, classNames);
           }
-          slotSegmentContainer.append(html);
+          eventElement = $(html).appendTo(slotSegmentContainer);
+          bindSlotSeg(event, eventElement, seg);
           return;
     }
 	
@@ -411,8 +412,9 @@ function AgendaEventRenderer() {
         var skinCssAttr = (skinCss ? " style='" + skinCss + "'" : '');
         var defaultClasses = ['fc-event', 'fc-event-skin', 'fc-event-vert', 'fc-event-simplified'];
         var classes = classNames ? defaultClasses.concat(classNames) : defaultClasses;
-	    var html = " <div style='position:absolute;z-index:8; width: " + daycolWidth + "px ;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
+	    var html = "<div data-event-id='" + event.id + "' style='position:absolute;z-index:8; width: " + daycolWidth + "px ;top:" + seg.top + "px;left:" + (seg.left - 2) + "px;height:" + seg.outerHeight + "px;" + skinCss + "'"+
 	    " class='" + classes.join(' ') + "'" + "></div>";
+	    
 	    return html;
 	}
 	
