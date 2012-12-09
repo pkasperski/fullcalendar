@@ -226,6 +226,7 @@ function AgendaEventRenderer() {
     function renderSlotSegsSimplified (segs, classNames) {
         var i, segCnt=segs.length, seg,
     		event,
+    		eventElement,
     		top, bottom,
     		colI, levelI, forward,
     		leftmost,
