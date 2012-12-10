@@ -102,6 +102,10 @@ function AgendaEventRenderer() {
 
 			el.css(cssStyles);
 			el.find('.fc-event-skin').css(cssStyles);
+
+			if (secondaryBorderColor) {
+				el.css('backgroundColor', secondaryBorderColor);
+			}
 		});
 	}
 
