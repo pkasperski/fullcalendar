@@ -429,9 +429,17 @@ function AgendaEventRenderer() {
 		var url = event.url;
 		var skinCss = getSkinCss(event, opt);
 		var skinCssAttr = (skinCss ? " style='" + skinCss + "'" : '');
-		var classes = ['fc-event', 'fc-event-skin', 'fc-event-vert'];
+		var classes = ['fc-event', 'fc-event-vert'];
+		var secondaryBorderColor = event.secondaryBorderColor || null;
+		var borderColor = event.borderColor || event.color;
+		var mainDivSkinCss = '';
 		if (isEventDraggable(event)) {
 			classes.push('fc-event-draggable');
+		}
+		if (secondaryBorderColor) {
+			mainDivSkinCss = 'border-left-color:' + borderColor + '; border-top-color:' + borderColor + '; border-right-color:' + secondaryBorderColor + '; border-bottom-color:' + secondaryBorderColor + '; background-color: ' + secondaryBorderColor + ';';
+		} else {
+			mainDivSkinCss = 'border-color:' + borderColor + ';';
 		}
         
         // THESE ARE FAKED ROUNDED CORNERS
@@ -453,7 +461,7 @@ function AgendaEventRenderer() {
 		html +=
 			" data-event-id='" + event.id + "'" +
 			" class='" + classes.join(' ') + "'" +
-			" style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px;" + skinCss + "'" +
+			" style='position:absolute;z-index:8;top:" + seg.top + "px;left:" + seg.left + "px; " + mainDivSkinCss + "'" + 
 			">" +
 			"<div class='fc-event-inner fc-event-skin'" + skinCssAttr + ">" +
 			"<div class='fc-event-head fc-event-skin'" + skinCssAttr + ">" +
