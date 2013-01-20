@@ -98,7 +98,8 @@ th, td {
 
 .fc-agenda-slots tr.fc-minor th,
 .fc-agenda-slots tr.fc-minor td {
-	border-top-style: none;
+	/* don't put this to none or hidden, the computation of the slector will be off then  */
+	border-top-style: dotted;
 	}
 	
 .fc-agenda-slots tr.fc-minor th.ui-widget-header {
