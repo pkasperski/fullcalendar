@@ -264,8 +264,10 @@ function AgendaEventRenderer() {
               seg.left = leftmost;
               html += slotSegSimplifiedHtml(event, seg, classNames);
           }
-          eventElement = $(html).appendTo(slotSegmentContainer);
-          bindSlotSeg(event, eventElement, seg);
+          if (event) {
+	          eventElement = $(html).appendTo(slotSegmentContainer);
+	          bindSlotSeg(event, eventElement, seg);
+	      }
           return;
     }
 	
