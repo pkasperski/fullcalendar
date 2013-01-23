@@ -13,7 +13,7 @@ th {
 	font-size: 0.87em;
 }
 	
-th, td {
+.fc-agenda table th, .fc-agenda table td {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
