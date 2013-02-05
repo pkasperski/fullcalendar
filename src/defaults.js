@@ -35,7 +35,7 @@ var defaults = {
 		resourceMonth: 'MMMM yyyy',
 		resourceWeek: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
 		resourceNextWeeks: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
-		resourceDay: 'dddd, MMM d, yyyy'
+		resourceDay: 'dddd, MMM d, yyyy',
 		day: 'dddd, MMM d, yyyy',
 		list: 'MMM d, yyyy',
 		table: 'MMM d, yyyy'
@@ -47,7 +47,7 @@ var defaults = {
 		resourceDay: 'H:mm',
 		resourceMonth: 'M/d',
 		resourceWeek: 'ddd M/d',
-		resourceNextWeeks: 'ddd M/d'
+		resourceNextWeeks: 'ddd M/d',
 		list: 'dddd, MMM d, yyyy',
 		table: 'MMM d, yyyy'
 	},
@@ -74,7 +74,7 @@ var defaults = {
 		resourceDay: 'resource day',
 		resourceWeek: 'resource week',
 		resourceNextWeeks: 'resource next weeks',
-		resourceMonth: 'resource month'
+		resourceMonth: 'resource month',
 		list: 'list',
 		table: 'table'
 	},

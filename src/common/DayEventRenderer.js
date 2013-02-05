@@ -55,6 +55,7 @@ function DayEventRenderer() {
     	var seg;
     	var event;
     	var classes;
+        var defaultClasses;
     	var bounds = allDayBounds();
     	var minLeft = bounds.left;
     	var maxLeft = bounds.right;

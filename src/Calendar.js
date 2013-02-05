@@ -375,7 +375,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 				}
 			}
 		} else {
-			console.info('To Optimize add updateEventsNoRerender to view:', currentView.name);
+//            console.info('To Optimize add updateEventsNoRerender to view:', currentView.name);
 			rerenderEvents();
 		}
 	}
