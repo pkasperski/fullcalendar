@@ -43,7 +43,7 @@ function View(element, calendar, viewName) {
 	
 	function opt(name, viewNameOverride) {
 		var v = options[name];
-		if (typeof v == 'object') {
+		if (typeof v == 'object' && !v.length) {
 			if(name == 'resources') {
 				return v;
 			}
@@ -136,10 +136,16 @@ function View(element, calendar, viewName) {
 	// attaches eventClick, eventMouseover, eventMouseout
 	function eventElementHandlers(event, eventElement) {
 		eventElement
-			.click(function(ev) {
+    		.click(function(ev) {
+    			if (!eventElement.hasClass('ui-draggable-dragging') &&
+    				!eventElement.hasClass('ui-resizable-resizing')) {
+    					return trigger('eventClick', this, event, ev);
+    				}
+    		})
+			.dblclick(function(ev) {
 				if (!eventElement.hasClass('ui-draggable-dragging') &&
 					!eventElement.hasClass('ui-resizable-resizing')) {
-						return trigger('eventClick', this, event, ev);
+						return trigger('eventDoubleClick', this, event, ev);
 					}
 			})
 			.hover(

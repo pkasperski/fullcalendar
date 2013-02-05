@@ -6,6 +6,7 @@ function DayEventRenderer() {
 	t.renderDaySegs = renderDaySegs;
 	t.resizableDayEvent = resizableDayEvent;
 	t.renderTempDaySegs = renderTempDaySegs;
+	t.renderDaySegsSimplified = renderDaySegsSimplified;
 	
 	
 	// imports
@@ -42,6 +43,85 @@ function DayEventRenderer() {
 	/* Rendering
 	-----------------------------------------------------------------------------*/
 	
+	function renderDaySegsSimplified(segs, classNames) {
+		var segmentContainer = getDaySegmentContainer();
+		segmentContainer.append(daySegSimplifiedHTML(segs), classNames);
+	}
+	
+    function daySegSimplifiedHTML(segs, classNames) {
+    	var rtl = opt('isRTL');
+    	var i;
+    	var segCnt=segs.length;
+    	var seg;
+    	var event;
+    	var classes;
+    	var bounds = allDayBounds();
+    	var minLeft = bounds.left;
+    	var maxLeft = bounds.right;
+    	var leftCol;
+    	var rightCol;
+    	var left;
+    	var right;
+    	var skinCss;
+    	var html = '';
+    	// calculate desired position/dimensions, create html
+    	for (i=0; i<segCnt; i++) {
+    		seg = segs[i];
+    		event = seg.event;
+    		defaultClasses = ['fc-event', 'fc-event-skin', 'fc-event-hori', 'fc-event-simplified'];
+    		classes = classNames ? defaultClasses.concat(classNames) : defaultClasses;
+    		if (rtl) {
+                
+                // CREATES FAKE ROUNDED CORNERS
+                // if (seg.isStart) {
+                //     classes.push('fc-corner-right');
+                // }
+                // if (seg.isEnd) {
+                //     classes.push('fc-corner-left');
+                // }
+    			leftCol = dayOfWeekCol(seg.end.getDay()-1);
+    			rightCol = dayOfWeekCol(seg.start.getDay());
+    			left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
+    			right = seg.isStart ? colContentRight(rightCol) : maxLeft;
+    		}else{
+                
+                // CREATES FAKE ROUNDED CORNERS
+    			// if (seg.isStart) {
+    			//                     classes.push('fc-corner-left');
+    			//                 }
+    			//                 if (seg.isEnd) {
+    			//                     classes.push('fc-corner-right');
+    			//                 }
+    			leftCol = dayOfWeekCol(seg.start.getDay());
+    			rightCol = dayOfWeekCol(seg.end.getDay()-1);
+    			left = seg.isStart ? colContentLeft(leftCol) : minLeft;
+    			right = seg.isEnd ? colContentRight(rightCol) : maxLeft;
+    		}
+    		classes = classes.concat(event.className);
+    		if (event.source) {
+    			classes = classes.concat(event.source.className || []);
+    		}
+    		skinCss = getSkinCss(event, opt);
+
+    		seg.left = left;
+    		seg.outerWidth = right - left;
+    		seg.startCol = leftCol;
+    		seg.endCol = rightCol + 1; // needs to be exclusive
+
+    		html +=
+    			"<div" +
+				" data-event-id='" + event.id + "'" +
+    			" class='" + classes.join(' ') + "'" +
+    			" style='position:absolute;z-index:8;height:2px;left:"+left+"px;width:" + seg.outerWidth + "px;" + skinCss + "'" +
+    			">" +
+    			"<div" +
+    			" class='fc-event-inner fc-event-skin'" +
+    			(skinCss ? " style='" + skinCss + "'" : '') +
+    			"></div></div>";
+    	}
+    	return html;
+    }
+	
 	
 	function renderDaySegs(segs, modifiedEventId) {
 		var segmentContainer = getDaySegmentContainer();
@@ -57,6 +137,9 @@ function DayEventRenderer() {
 		var seg;
 		var top;
 		var k;
+		var overflows;
+		var overflowLinks;
+		var maxHeight = opt('maxHeight');
 		segmentContainer[0].innerHTML = daySegHTML(segs); // faster than .html()
 		daySegElementResolve(segs, segmentContainer.children());
 		daySegElementReport(segs);
@@ -68,23 +151,66 @@ function DayEventRenderer() {
 		// set row heights, calculate event tops (in relation to row top)
 		for (rowI=0; rowI<rowCnt; rowI++) {
 			levelI = 0;
+			overflows = [];
+			overflowLinks = {};
 			colHeights = [];
 			for (j=0; j<colCnt; j++) {
+				overflows[j] = 0;
 				colHeights[j] = 0;
 			}
 			while (i<segCnt && (seg = segs[i]).row == rowI) {
 				// loop through segs in a row
 				top = arrayMax(colHeights.slice(seg.startCol, seg.endCol));
-				seg.top = top;
-				top += seg.outerHeight;
+				if (maxHeight && top + seg.outerHeight > maxHeight) {
+					seg.overflow = true;
+				}
+				else {
+					seg.top = top;
+					top += seg.outerHeight;
+				}
 				for (k=seg.startCol; k<seg.endCol; k++) {
-					colHeights[k] = top;
+					if (overflows[k])
+						seg.overflow = true;
+					if (seg.overflow) {
+						if (seg.isStart && !overflowLinks[k])
+							overflowLinks[k] = { seg:seg, top:top, date:cloneDate(seg.start, true), count:0 };
+						if (overflowLinks[k])
+							overflowLinks[k].count++;
+						overflows[k]++;
+					}
+					else
+						colHeights[k] = top;
 				}
 				i++;
 			}
 			rowDivs[rowI].height(arrayMax(colHeights));
+			renderOverflowLinks(overflowLinks, rowDivs[rowI]);
 		}
 		daySegSetTops(segs, getRowTops(rowDivs));
+	}
+	
+	
+	function renderOverflowLinks(overflowLinks, rowDiv) {
+		var container = getDaySegmentContainer();
+		var colCnt = getColCnt();
+		var element, triggerRes, link;
+		for (var j=0; j<colCnt; j++) {
+			if ((link = overflowLinks[j])) {
+				if (link.count > 1) {
+					element = $('<a>').addClass('fc-more-link').html('+'+link.count).appendTo(container);
+					element[0].style.position = 'absolute';
+					element[0].style.left = link.seg.left + 'px';
+					element[0].style.top = (link.top + rowDiv[0].offsetTop) + 'px';
+					triggerRes = trigger('overflowRender', link, { count:link.count, date:link.date }, element);
+					if (triggerRes === false)
+						element.remove();
+				}
+				else {
+					link.seg.top = link.top;
+					link.seg.overflow = false;
+				}
+			}
+		}
 	}
 	
 	
@@ -146,80 +272,81 @@ function DayEventRenderer() {
 				classes.push('fc-event-draggable');
 			}
 			if (rtl) {
-				if (seg.isStart) {
-					classes.push('fc-corner-right');
-				}
-				if (seg.isEnd) {
-					classes.push('fc-corner-left');
-				}
+                
+                // CREATES FAKE ROUNDED CORNERS
+                // if (seg.isStart) {
+                //     classes.push('fc-corner-right');
+                // }
+                // if (seg.isEnd) {
+                //     classes.push('fc-corner-left');
+                // }
 				leftCol = dayOfWeekCol(seg.end.getDay()-1);
 				rightCol = dayOfWeekCol(seg.start.getDay());
 				left = seg.isEnd ? colContentLeft(leftCol) : minLeft;
 				right = seg.isStart ? colContentRight(rightCol) : maxLeft;
 			}else{
-				if (seg.isStart) {
-					classes.push('fc-corner-left');
-				}
-				if (seg.isEnd) {
-					classes.push('fc-corner-right');
-				}
-				
-				if (viewName == 'resourceMonth') {
-					// for resourceMonth view
-					leftCol = seg.start.getDate()-1;
-					rightCol = seg.end.getDate()-2;
+                // CREATES FAKE ROUNDED CORNERS
+				// if (seg.isStart) {
+				//                     classes.push('fc-corner-left');
+				//                 }
+				//                 if (seg.isEnd) {
+				//                     classes.push('fc-corner-right');
+				//                 }
+                if (viewName == 'resourceMonth') {
+                    // for resourceMonth view
+                    leftCol = seg.start.getDate()-1;
+                    rightCol = seg.end.getDate()-2;
 
-					if(!weekends) {
-						// Drop out weekends
-						weekendSumColStart=0	
-						weekendSumColEnd=0
-						
-						for(var j=0; j<=leftCol; j++) {
-							weekendTestDate = addDays(cloneDate(t.visStart), j);
-							
-							if(weekendTestDate.getDay() == 0 || weekendTestDate.getDay() == 6) {
-								weekendSumColStart++;
-							}
-						}
-						leftCol -= weekendSumColStart;
-						
-						if (seg.start.getDay() == 6 || seg.start.getDay() == 0) leftCol++;
-						
-						for(j=0; j<=rightCol; j++) {
-							weekendTestDate = addDays(cloneDate(t.visStart), j);
-							
-							if(weekendTestDate.getDay() == 0 || weekendTestDate.getDay() == 6) {
-								weekendSumColEnd++;
-							}
-						}
-						rightCol -= weekendSumColEnd;
-					}
-					
-					if(rightCol < 0) {
-						// end is in the next month so rightCol is the last column
-						rightCol = getColCnt()-1;
-					}
-				}
-				else if (viewName == 'resourceNextWeeks') {
-					
-					leftCol = dateCell(seg.start).col;
-					rightCol = dateCell(seg.end).col-1;
-					if(!weekends) {
-						leftCol = dateCell(seg.start).col;
-						rightCol = dateCell(addDays(cloneDate(seg.end),-1)).col;
-						if (seg.start.getDay() == 6 || seg.start.getDay() == 0) leftCol++;
-					}
-				}
-				else if (viewName == 'resourceDay') {
-					// hack for resourceDay view
-					leftCol = timeOfDayCol(seg.start);
-					rightCol = timeOfDayCol(seg.end)-1;
-				}
-				else {
-					leftCol = dayOfWeekCol(seg.start.getDay());
-					rightCol = dayOfWeekCol(seg.end.getDay()-1);
-				}
+                    if(!weekends) {
+                        // Drop out weekends
+                        weekendSumColStart=0
+                        weekendSumColEnd=0
 
+                        for(var j=0; j<=leftCol; j++) {
+                            weekendTestDate = addDays(cloneDate(t.visStart), j);
+
+                            if(weekendTestDate.getDay() == 0 || weekendTestDate.getDay() == 6) {
+                                weekendSumColStart++;
+                            }
+                        }
+                        leftCol -= weekendSumColStart;
+
+                        if (seg.start.getDay() == 6 || seg.start.getDay() == 0) leftCol++;
+
+                        for(j=0; j<=rightCol; j++) {
+                            weekendTestDate = addDays(cloneDate(t.visStart), j);
+
+                            if(weekendTestDate.getDay() == 0 || weekendTestDate.getDay() == 6) {
+                                weekendSumColEnd++;
+                            }
+                        }
+                        rightCol -= weekendSumColEnd;
+                    }
+
+                    if(rightCol < 0) {
+                        // end is in the next month so rightCol is the last column
+                        rightCol = getColCnt()-1;
+                    }
+                }
+                else if (viewName == 'resourceNextWeeks') {
+
+                    leftCol = dateCell(seg.start).col;
+                    rightCol = dateCell(seg.end).col-1;
+                    if(!weekends) {
+                        leftCol = dateCell(seg.start).col;
+                        rightCol = dateCell(addDays(cloneDate(seg.end),-1)).col;
+                        if (seg.start.getDay() == 6 || seg.start.getDay() == 0) leftCol++;
+                    }
+                }
+                else if (viewName == 'resourceDay') {
+                    // hack for resourceDay view
+                    leftCol = timeOfDayCol(seg.start);
+                    rightCol = timeOfDayCol(seg.end)-1;
+                }
+                else {
+                    leftCol = dayOfWeekCol(seg.start.getDay());
+                    rightCol = dayOfWeekCol(seg.end.getDay()-1);
+                }
 				left = seg.isStart ? colContentLeft(leftCol) : minLeft;
 				right = seg.isEnd ? colContentRight(rightCol) : maxLeft;
 			}
@@ -235,6 +362,7 @@ function DayEventRenderer() {
 				html += "<div";
 			}
 			html +=
+				" data-event-id='" + event.id + "'" +
 				" class='" + classes.join(' ') + "'" +
 				" style='position:absolute;z-index:8;left:"+left+"px;" + skinCss + "'" +
 				">" +
@@ -249,8 +377,12 @@ function DayEventRenderer() {
 					"</span>";
 			}
 			html +=
-				"<span class='fc-event-title' " + (skinCss ? " style='" + skinCss + "'" : "") + ">" + htmlEscape(event.title) + "</span>" +
-				"</div>";
+				"<span class='fc-event-title'>" +
+					"<span class='event-title-txt' " + (skinCss ? " style='" + skinCss + "'" : "") + ">" + htmlEscape(event.title) + " </span>" +
+ 				"</span>" +
+				"</div>" + // closing inner
+				"<span class='event-badges'></span>" +
+				"<span class='event-icons'></span>";
 			if (seg.isEnd && isEventResizable(event)) {
 				html +=
 					"<div class='ui-resizable-handle ui-resizable-" + (rtl ? 'w' : 'e') + "'>" +
@@ -393,6 +525,8 @@ function DayEventRenderer() {
 				}
 				seg.outerHeight = element[0].offsetHeight + val;
 			}
+			else  // always set a value (issue #1108 )
+				seg.outerHeight = 0;
 		}
 	}
 	
@@ -429,12 +563,14 @@ function DayEventRenderer() {
 		for (i=0; i<segCnt; i++) {
 			seg = segs[i];
 			element = seg.element;
-			if (element) {
-				var segTop = parseInt(seg.top)>0?parseInt(seg.top):0;
-				element[0].style.top = rowTops[seg.row] + segTop + 'px';
+            if (element && !seg.overflow) {
+                var segTop = parseInt(seg.top)>0?parseInt(seg.top):0;
+                element[0].style.top = rowTops[seg.row] + (seg.top||0) + 'px';
 				event = seg.event;
 				trigger('eventAfterRender', event, event, element);
 			}
+			else if (element)
+				element.hide();
 		}
 	}
 	

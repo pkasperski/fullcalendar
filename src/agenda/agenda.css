@@ -4,8 +4,29 @@
 
 .fc-agenda table {
 	border-collapse: separate;
+	width: 100%; 
+	white-space: nowrap; 
+	table-layout: fixed;
 	}
+
+th {
+	font-size: 0.87em;
+}
 	
+.fc-agenda table th, .fc-agenda table td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.day-header {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: auto;
+	padding: 2px 4px;
+}
+
 .fc-agenda-days th {
 	text-align: center;
 	}
@@ -77,6 +98,7 @@
 
 .fc-agenda-slots tr.fc-minor th,
 .fc-agenda-slots tr.fc-minor td {
+	/* don't put this to none or hidden, the computation of the slector will be off then  */
 	border-top-style: dotted;
 	}
 	
@@ -90,7 +112,7 @@
 ------------------------------------------------------------------------*/
 
 .fc-event-vert {
-	border-width: 0 1px;
+	border-width: 1px;
 	}
 	
 .fc-event-vert .fc-event-head,
@@ -113,9 +135,6 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: #fff;
-	opacity: .3;
-	filter: alpha(opacity=30);
 	}
 	
 .fc .ui-draggable-dragging .fc-event-bg, /* TODO: something nicer like .fc-opacity */
@@ -135,10 +154,24 @@
 	font-family: monospace;
 	text-align: center;
 	cursor: s-resize;
+	display: none;
 	}
+
+.fc-event-vert:hover .ui-resizable-s {
+	display: block;
+}
 	
 .fc-agenda .ui-resizable-resizing { /* TODO: better selector */
 	_overflow: hidden;
 	}
 	
-	
+.fc-timeline {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-top: 2px solid #3ec400;
+	z-index: 999;
+}

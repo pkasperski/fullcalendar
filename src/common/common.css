@@ -1,20 +1,24 @@
-
 /* Cell Styles
 ------------------------------------------------------------------------*/
 
 .fc-widget-header,    /* <th>, usually */
 .fc-widget-content {  /* <td>, usually */
-	border: 1px solid #ccc;
+	border: 1px solid #ddd;
+	color: #707070;
 	}
 	
+/*th.fc-widget-header {
+	border-left: none;
+}*/
+	
 .fc-state-highlight { /* <td> today cell */ /* TODO: add .fc-today to <th> */
-	background: #ffc;
+	background: #f2f2f2;
 	}
 	
 .fc-cell-overlay { /* semi-transparent rectangle while dragging */
-	background: #9cf;
-	opacity: .2;
-	filter: alpha(opacity=20); /* for IE */
+	background: #36C;
+	opacity: .5;
+	filter: alpha(opacity=50); /* for IE */
 	}
 	
 
@@ -139,10 +143,11 @@
 ------------------------------------------------------------------------*/
 	 
 .fc-event {
-	border-style: solid;
-	border-width: 0;
+	border-style: solid ;
+	border-width: 0px;
 	font-size: .85em;
 	cursor: default;
+	opacity: 1;
 	}
 	
 a.fc-event,
@@ -162,6 +167,9 @@ a.fc-event {
 	border-color: #36c;     /* default BORDER color */
 	background-color: #36c; /* default BACKGROUND color */
 	color: #fff;            /* default TEXT color */
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 	
 .fc-event-inner {
@@ -169,13 +177,21 @@ a.fc-event {
 	width: 100%;
 	height: 100%;
 	border-style: solid;
-	border-width: 0;
+	border-width: 0px;
 	overflow: hidden;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
 	}
 	
 .fc-event-time,
 .fc-event-title {
 	padding: 0 1px;
+	-webkit-font-smoothing: antialiased;
+	}
+
+.fc-event-title {
+	line-height: 18px;
 	}
 	
 .fc .ui-resizable-handle { /*** TODO: don't use ui-resizable anymore, change class ***/
@@ -187,13 +203,20 @@ a.fc-event {
 	line-height: 50%; /* */
 	}
 	
+	.fc-event-content {
+	margin: -4px 0 0 1px;
+	}
 	
+	.fc-event-time {
+	font-size: 0.65em;
+	font-weight: bold;
+	}
 	
 /* Horizontal Events
 ------------------------------------------------------------------------*/
 
 .fc-event-hori {
-	border-width: 1px 0;
+	border-width: 1px;
 	margin-bottom: 1px;
 	}
 	

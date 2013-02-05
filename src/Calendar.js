@@ -12,6 +12,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 	t.reportEvents = reportEvents;
 	t.refetchResources = refetchResources;
 	t.reportEventChange = reportEventChange;
+	t.updateEventsNoRerender = updateEventsNoRerender;
 	t.rerenderEvents = rerenderEvents;
 	t.changeView = changeView;
 	t.select = select;
@@ -29,6 +30,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 	t.getView = getView;
 	t.option = option;
 	t.trigger = trigger;
+	t.renderEventsSimplified = renderEventsSimplified;
 	
 	
 	// imports
@@ -250,6 +252,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 			setSize();
 			unselect();
 			currentView.clearEvents();
+			currentView.trigger('viewRender', currentView);
 			currentView.renderEvents(events);
 			currentView.sizeDirty = false;
 		}
@@ -327,8 +330,8 @@ function Calendar(element, options, eventSources, resourceSources) {
 	}
 	
 	
-	function refetchEvents() {
-		fetchEvents(currentView.visStart, currentView.visEnd); // will call reportEvents
+	function refetchEvents(source) {
+		fetchEvents(currentView.visStart, currentView.visEnd, source); // will call reportEvents
 	}
 	
 	function refetchResources() {
@@ -362,6 +365,20 @@ function Calendar(element, options, eventSources, resourceSources) {
 	function reportEventChange(eventID) {
 		rerenderEvents(eventID);
 	}
+
+	function updateEventsNoRerender(list) {
+		if (currentView.updateEventNoRerender) {
+			for (var i = 0; i < list.length; i++) {
+				var _events = this.clientEvents(list[i]);
+				if (_events.length > 0) {
+					currentView.updateEventNoRerender(_events[0]);
+				}
+			}
+		} else {
+			console.info('To Optimize add updateEventsNoRerender to view:', currentView.name);
+			rerenderEvents();
+		}
+	}
 	
 	
 	// attempts to rerenderEvents
@@ -369,6 +386,7 @@ function Calendar(element, options, eventSources, resourceSources) {
 		markEventsDirty();
 		if (elementVisible()) {
 			currentView.clearEvents();
+			currentView.trigger('viewRender', currentView);
 			currentView.renderEvents(events, modifiedEventID);
 			currentView.eventsDirty = false;
 		}
@@ -381,6 +399,12 @@ function Calendar(element, options, eventSources, resourceSources) {
 		});
 	}
 	
+	function renderEventsSimplified(events, classNames) {
+	    // Not all views have this function just yet
+	    if (currentView.renderEventsSimplified) {
+	        currentView.renderEventsSimplified(events, classNames);
+	    }
+	}
 
 
 	/* Selection
@@ -478,7 +502,12 @@ function Calendar(element, options, eventSources, resourceSources) {
 		if (name == 'height' || name == 'contentHeight' || name == 'aspectRatio') {
 			options[name] = value;
 			updateSize();
-		}
+		} else if (name.indexOf('list') == 0 || name == 'tableCols') {
+			options[name] = value;
+			currentView.start = null; // force re-render
+		} else if (name == 'maxHeight' || name == 'selectable' || name == 'editable') {
+			options[name] = value;
+        }
 	}
 	
 	

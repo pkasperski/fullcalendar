@@ -2,6 +2,12 @@
 FullCalendar ResourceViews - Full-sized drag & drop event calendar with horizontal multiuser views
 ====================================================
 
+About this fork (roundcube)
+===========================
+
+This fork adds features either requested in the issue tracker or needed for
+the Roundcube calendar plugin.
+
 Development and testing
 -----------------------
 

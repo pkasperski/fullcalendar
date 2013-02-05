@@ -10,6 +10,7 @@ var defaults = {
 		right: 'today prev,next'
 	},
 	weekends: true,
+	currentTimeIndicator: false,
 	
 	// editing
 	//editable: false,
@@ -31,11 +32,13 @@ var defaults = {
 	titleFormat: {
 		month: 'MMMM yyyy',
 		week: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
-		day: 'dddd, MMM d, yyyy',
 		resourceMonth: 'MMMM yyyy',
 		resourceWeek: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
 		resourceNextWeeks: "MMM d[ yyyy]{ '&#8212;'[ MMM] d yyyy}",
 		resourceDay: 'dddd, MMM d, yyyy'
+		day: 'dddd, MMM d, yyyy',
+		list: 'MMM d, yyyy',
+		table: 'MMM d, yyyy'
 	},
 	columnFormat: {
 		month: 'ddd',
@@ -45,6 +48,8 @@ var defaults = {
 		resourceMonth: 'M/d',
 		resourceWeek: 'ddd M/d',
 		resourceNextWeeks: 'ddd M/d'
+		list: 'dddd, MMM d, yyyy',
+		table: 'MMM d, yyyy'
 	},
 	timeFormat: { // for event elements
 		'': 'h(:mm)t' // default
@@ -70,7 +75,27 @@ var defaults = {
 		resourceWeek: 'resource week',
 		resourceNextWeeks: 'resource next weeks',
 		resourceMonth: 'resource month'
+		list: 'list',
+		table: 'table'
 	},
+	listTexts: {
+		until: 'until',
+		past: 'Past events',
+		today: 'Today',
+		tomorrow: 'Tomorrow',
+		thisWeek: 'This week',
+		nextWeek: 'Next week',
+		thisMonth: 'This month',
+		nextMonth: 'Next month',
+		future: 'Future events',
+		week: 'W'
+	},
+	
+	// list/table options
+	listSections: 'month',  // false|'day'|'week'|'month'|'smart'
+	listRange: 30,  // number of days to be displayed
+	listPage: 7,  // number of days to jump when paging
+	tableCols: ['handle', 'date', 'time', 'title'],
 	
 	// jquery-ui theming
 	theme: false,

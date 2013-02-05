@@ -21,6 +21,7 @@ function EventManager(options, _sources) {
 	t.removeEventSource = removeEventSource;
 	t.updateEvent = updateEvent;
 	t.renderEvent = renderEvent;
+	t.renderEvents = renderEvents;
 	t.removeEvents = removeEvents;
 	t.clientEvents = clientEvents;
 	t.normalizeEvent = normalizeEvent;
@@ -57,17 +58,20 @@ function EventManager(options, _sources) {
 	}
 	
 	
-	function fetchEvents(start, end) {
+	function fetchEvents(start, end, src) {
 		rangeStart = start;
 		rangeEnd = end;
-		cache = [];
+		// partially clear cache if refreshing one source only (issue #1061)
+		cache = typeof src != 'undefined' ? $.grep(cache, function(e) { return !isSourcesEqual(e.source, src); }) : [];
 		var fetchID = ++currentFetchID;
 		var len = sources.length;
-		pendingSourceCnt = len;
+		pendingSourceCnt = typeof src == 'undefined' ? len : 1;
 		for (var i=0; i<len; i++) {
-			fetchEventSource(sources[i], fetchID);
+			if (typeof src == 'undefined' || isSourcesEqual(sources[i], src))
+				fetchEventSource(sources[i], fetchID);
 		}
 	}
+
 	
 	
 	function fetchEventSource(source, fetchID) {
@@ -246,14 +250,22 @@ function EventManager(options, _sources) {
 	
 	
 	function renderEvent(event, stick) {
-		normalizeEvent(event);
-		if (!event.source) {
-			if (stick) {
-				stickySource.events.push(event);
-				event.source = stickySource;
-			}
-			cache.push(event);
-		}
+        renderEvents([event], stick);
+	}
+	
+	function renderEvents(events, stick) {
+        for (var i =0; i < events.length; i++) {
+            var event = events[i];
+    		normalizeEvent(event);
+    		if (!event.source) {
+    			if (stick) {
+    				stickySource.events.push(event);
+    				event.source = stickySource;
+    			}
+    		}
+    		// always push event to cache (issue #1112:)
+    		cache.push(event);
+        }
 		reportEvents(cache);
 	}
 	
